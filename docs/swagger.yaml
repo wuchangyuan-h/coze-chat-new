@@ -1,0 +1,258 @@
+definitions:
+  model.ChannelReq:
+    properties:
+      name:
+        type: string
+      parentId:
+        type: string
+      type:
+        type: number
+    type: object
+  model.ChannelResp:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.OpenAIChatCompletionRequest:
+    properties:
+      channelId:
+        type: string
+      messages:
+        items:
+          $ref: '#/definitions/model.OpenAIChatMessage'
+        type: array
+      model:
+        type: string
+      stream:
+        type: boolean
+    type: object
+  model.OpenAIChatCompletionResponse:
+    properties:
+      choices:
+        items:
+          $ref: '#/definitions/model.OpenAIChoice'
+        type: array
+      created:
+        type: integer
+      id:
+        type: string
+      model:
+        type: string
+      object:
+        type: string
+      system_fingerprint:
+        type: string
+      usage:
+        $ref: '#/definitions/model.OpenAIUsage'
+    type: object
+  model.OpenAIChatMessage:
+    properties:
+      content: {}
+      role:
+        type: string
+    type: object
+  model.OpenAIChoice:
+    properties:
+      delta:
+        $ref: '#/definitions/model.OpenAIDelta'
+      finish_reason:
+        type: string
+      index:
+        type: integer
+      logprobs:
+        type: string
+      message:
+        $ref: '#/definitions/model.OpenAIMessage'
+    type: object
+  model.OpenAIDelta:
+    properties:
+      content:
+        type: string
+    type: object
+  model.OpenAIImagesGenerationRequest:
+    properties:
+      channelId:
+        type: string
+      model:
+        type: string
+      prompt:
+        type: string
+    type: object
+  model.OpenAIImagesGenerationResponse:
+    properties:
+      created:
+        type: integer
+      data:
+        items:
+          properties:
+            url:
+              type: string
+          type: object
+        type: array
+    type: object
+  model.OpenAIMessage:
+    properties:
+      content:
+        type: string
+      role:
+        type: string
+    type: object
+  model.OpenAIUsage:
+    properties:
+      completion_tokens:
+        type: integer
+      prompt_tokens:
+        type: integer
+      total_tokens:
+        type: integer
+    type: object
+  model.ThreadReq:
+    properties:
+      archiveDuration:
+        type: number
+      channelId:
+        type: string
+      name:
+        type: string
+    type: object
+  model.ThreadResp:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: COZE-DISCORD-PROXY 代理服务
+  title: COZE-DISCORD-PROXY
+  version: 1.0.0
+paths:
+  /api/channel/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建频道
+      parameters:
+      - description: channelModel
+        in: body
+        name: channelModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.ChannelReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: '#/definitions/model.ChannelResp'
+      summary: 创建频道
+      tags:
+      - channel
+  /api/channel/del/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 删除频道
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            type: string
+      summary: 删除频道
+      tags:
+      - channel
+  /api/thread/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建线程
+      parameters:
+      - description: threadModel
+        in: body
+        name: threadModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.ThreadReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: '#/definitions/model.ThreadResp'
+      summary: 创建线程
+      tags:
+      - thread
+  /v1/chat/completions:
+    post:
+      consumes:
+      - application/json
+      description: 发送消息-openai
+      parameters:
+      - description: request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.OpenAIChatCompletionRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: out-time
+        in: header
+        name: out-time
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: '#/definitions/model.OpenAIChatCompletionResponse'
+      summary: 发送消息-openai
+      tags:
+      - openai
+  /v1/images/generations:
+    post:
+      consumes:
+      - application/json
+      description: 图片生成-openai
+      parameters:
+      - description: request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.OpenAIImagesGenerationRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: out-time
+        in: header
+        name: out-time
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: '#/definitions/model.OpenAIImagesGenerationResponse'
+      summary: 图片生成-openai
+      tags:
+      - openai
+swagger: "2.0"
